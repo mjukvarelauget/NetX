@@ -1,11 +1,7 @@
 module Main exposing (..)
 
--- Press buttons to increment and decrement a counter.
---
--- Read how it works:
---   https://guide.elm-lang.org/architecture/buttons.html
---
 import Browser
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
@@ -13,47 +9,35 @@ import Random
 
 -- MAIN
 main =
-  Browser.element { init = init, update = update, subscriptions = subscriptions, view = view }
+  Browser.element { init = init, update = update, subscriptions = subscriptions, view = view}
 
 -- MODEL
-type alias Model = { counter : Int , dieFace : Int }
+type alias Model = { length: Int , numbers : List Int}
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model 0 1
+  ( Model 0 []
   , Cmd.none
   )
 
 -- UPDATE
 type Msg
-  = Increment
-  | Decrement
-  | Generate
-  | NewFace Int
+  = GenerateLength
+  | UpdateLength Int
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Increment ->
-      ( { model | counter = model.counter + 1 }
-      , Cmd.none
-      )
+      GenerateLength ->
+          ( model
+          , Random.generate UpdateLength (Random.int 1 10)
+          )
 
-    Decrement ->
-      ( { model | counter = model.counter - 1 }
-      , Cmd.none
-      )
-
-    Generate ->
-      ( model
-      , Random.generate NewFace (Random.int 1 6)
-      )
-
-    NewFace newFace ->
-      ( Model model.counter newFace
-      , Cmd.none
-      )
-
+      UpdateLength newLength ->
+          ( {model | length = newLength }
+          , Cmd.none
+           )
+      
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -63,15 +47,11 @@ subscriptions model =
 -- VIEW
 view : Model -> Html Msg
 view model =
-  div []
-    [ button [ onClick Decrement, class "mybutton" ] [ text "-" ]
-    , div [] [ text (String.fromInt model.counter) ]
-    , button [ onClick Increment ] [ text "+" ]
-    , randomButton model
+  div [] [
+       button [onClick GenerateLength, class "mybutton"] [text "Generate name"]
+      ,div [] [ text (String.fromInt model.length) ]
+      ,randomString model
     ]
 
-randomButton model =
-  div []
-    [ h1 [] [ text (String.fromInt model.dieFace) ]
-    , button [ onClick Generate ] [ text "Generate" ]
-    ]
+randomString model =
+  text "tekst!"

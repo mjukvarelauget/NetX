@@ -5228,14 +5228,14 @@ var $elm$core$Task$perform = F2(
 	});
 var $elm$browser$Browser$element = _Browser_element;
 var $author$project$Main$Model = F2(
-	function (counter, dieFace) {
-		return {counter: counter, dieFace: dieFace};
+	function (length, numbers) {
+		return {length: length, numbers: numbers};
 	});
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		A2($author$project$Main$Model, 0, 1),
+		A2($author$project$Main$Model, 0, _List_Nil),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5243,8 +5243,8 @@ var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
 var $author$project$Main$subscriptions = function (model) {
 	return $elm$core$Platform$Sub$none;
 };
-var $author$project$Main$NewFace = function (a) {
-	return {$: 'NewFace', a: a};
+var $author$project$Main$UpdateLength = function (a) {
+	return {$: 'UpdateLength', a: a};
 };
 var $elm$random$Random$Generate = function (a) {
 	return {$: 'Generate', a: a};
@@ -5397,35 +5397,23 @@ var $elm$random$Random$int = F2(
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		switch (msg.$) {
-			case 'Increment':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{counter: model.counter + 1}),
-					$elm$core$Platform$Cmd$none);
-			case 'Decrement':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{counter: model.counter - 1}),
-					$elm$core$Platform$Cmd$none);
-			case 'Generate':
-				return _Utils_Tuple2(
+		if (msg.$ === 'GenerateLength') {
+			return _Utils_Tuple2(
+				model,
+				A2(
+					$elm$random$Random$generate,
+					$author$project$Main$UpdateLength,
+					A2($elm$random$Random$int, 1, 10)));
+		} else {
+			var newLength = msg.a;
+			return _Utils_Tuple2(
+				_Utils_update(
 					model,
-					A2(
-						$elm$random$Random$generate,
-						$author$project$Main$NewFace,
-						A2($elm$random$Random$int, 1, 6)));
-			default:
-				var newFace = msg.a;
-				return _Utils_Tuple2(
-					A2($author$project$Main$Model, model.counter, newFace),
-					$elm$core$Platform$Cmd$none);
+					{length: newLength}),
+				$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$Decrement = {$: 'Decrement'};
-var $author$project$Main$Increment = {$: 'Increment'};
+var $author$project$Main$GenerateLength = {$: 'GenerateLength'};
 var $elm$html$Html$button = _VirtualDom_node('button');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
@@ -5454,35 +5442,10 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
-var $author$project$Main$Generate = {$: 'Generate'};
-var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
-var $author$project$Main$randomButton = function (model) {
-	return A2(
-		$elm$html$Html$div,
-		_List_Nil,
-		_List_fromArray(
-			[
-				A2(
-				$elm$html$Html$h1,
-				_List_Nil,
-				_List_fromArray(
-					[
-						$elm$html$Html$text(
-						$elm$core$String$fromInt(model.dieFace))
-					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Main$Generate)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Generate')
-					]))
-			]));
+var $author$project$Main$randomString = function (model) {
+	return $elm$html$Html$text('tekst!');
 };
 var $author$project$Main$view = function (model) {
 	return A2(
@@ -5494,12 +5457,12 @@ var $author$project$Main$view = function (model) {
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
-						$elm$html$Html$Events$onClick($author$project$Main$Decrement),
+						$elm$html$Html$Events$onClick($author$project$Main$GenerateLength),
 						$elm$html$Html$Attributes$class('mybutton')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text('-')
+						$elm$html$Html$text('Generate name')
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -5507,19 +5470,9 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						$elm$html$Html$text(
-						$elm$core$String$fromInt(model.counter))
+						$elm$core$String$fromInt(model.length))
 					])),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick($author$project$Main$Increment)
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('+')
-					])),
-				$author$project$Main$randomButton(model)
+				$author$project$Main$randomString(model)
 			]));
 };
 var $author$project$Main$main = $elm$browser$Browser$element(
