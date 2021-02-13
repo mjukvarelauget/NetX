@@ -16,7 +16,7 @@ type alias Model = { length: Int , numbers : List Int}
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model 0 []
+  ( Model -1 []
   , Cmd.none
   )
 
@@ -54,4 +54,12 @@ view model =
     ]
 
 randomString model =
-  text "tekst!"
+  text (generateString model.length)
+
+-- HELPERS
+generateString : Int -> String
+generateString length =
+    if(length > 1) then
+        "a" ++ generateString (length-1)
+    else
+        "a"

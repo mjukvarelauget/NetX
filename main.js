@@ -5231,11 +5231,14 @@ var $author$project$Main$Model = F2(
 	function (length, numbers) {
 		return {length: length, numbers: numbers};
 	});
+var $elm$core$Basics$negate = function (n) {
+	return -n;
+};
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		A2($author$project$Main$Model, 0, _List_Nil),
+		A2($author$project$Main$Model, -1, _List_Nil),
 		$elm$core$Platform$Cmd$none);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5354,9 +5357,6 @@ var $elm$random$Random$generate = F2(
 				A2($elm$random$Random$map, tagger, generator)));
 	});
 var $elm$core$Bitwise$and = _Bitwise_and;
-var $elm$core$Basics$negate = function (n) {
-	return -n;
-};
 var $elm$core$Bitwise$xor = _Bitwise_xor;
 var $elm$random$Random$peel = function (_v0) {
 	var state = _v0.a;
@@ -5442,10 +5442,14 @@ var $elm$html$Html$Events$onClick = function (msg) {
 		'click',
 		$elm$json$Json$Decode$succeed(msg));
 };
+var $author$project$Main$generateString = function (length) {
+	return (length > 1) ? ('a' + $author$project$Main$generateString(length - 1)) : 'a';
+};
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
 var $author$project$Main$randomString = function (model) {
-	return $elm$html$Html$text('tekst!');
+	return $elm$html$Html$text(
+		$author$project$Main$generateString(model.length));
 };
 var $author$project$Main$view = function (model) {
 	return A2(
