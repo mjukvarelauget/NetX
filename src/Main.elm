@@ -24,6 +24,7 @@ init _ =
 type Msg
   = GenerateLength
   | UpdateLength Int
+  | PopulateList Int
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
@@ -34,10 +35,14 @@ update msg model =
           )
 
       UpdateLength newLength ->
-          ( {model | length = newLength }
+          {model | length = newLength }
+          |> update (PopulateList newLength)
+
+      PopulateList number ->
+          ( {model | numbers = number::model.numbers}
           , Cmd.none
-           )
-      
+          )
+
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -50,6 +55,7 @@ view model =
   div [] [
        button [onClick GenerateLength, class "mybutton"] [text "Generate name"]
       ,div [] [ text (String.fromInt model.length) ]
+      ,text (printList model.numbers)
       ,randomString model
     ]
 
@@ -63,3 +69,9 @@ generateString length =
         "a" ++ generateString (length-1)
     else
         "a"
+
+printList : List Int -> String
+printList list =
+  case list of
+    [] -> ""
+    (head::tail) -> (String.fromInt head) ++ " " ++ (printList tail)
