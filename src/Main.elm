@@ -2,6 +2,7 @@ module Main exposing (..)
 
 import Browser
 
+import String exposing (fromChar)
 import Char exposing (fromCode)
 
 import Html exposing (..)
@@ -17,11 +18,11 @@ main =
   Browser.element { init = init, update = update, subscriptions = subscriptions, view = view}
 
 -- MODEL
-type alias Model = { length: Int , name: List Char}
+type alias Model = { length: Int , name: String, randomPart: List Char}
 
 init : () -> (Model, Cmd Msg)
 init _ =
-  ( Model -1 []
+  ( Model -1 "" []
   , Cmd.none
   )
 
@@ -31,17 +32,27 @@ type Msg
   | GenerateLetterCode
   | AppendNewLetter Int
   | UpdateNameLength Int
+  | GenerateName
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
+      GenerateName ->
+          let
+              nameBase = "Net"
+              randomPart = "X"
+          in
+              ({model | name = nameBase ++ randomPart}
+              , Cmd.none)
+              
+      
       GenerateLetterCode ->
           ( model
           , Random.generate AppendNewLetter (Random.int letterRangeLow letterRangeHigh)
           )
 
       AppendNewLetter letterCode ->
-          ({model | name = fromCode(letterCode)::model.name}
+          ({model | randomPart = fromCode(letterCode) :: model.randomPart}
           , Cmd.none)
           
       GenerateNameLength minLength maxLength ->
@@ -65,26 +76,21 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div [] [
-       button [onClick (GenerateNameLength 1 10), class "mybutton"] [text "Generate name"]
+       button [onClick (GenerateNameLength 1 10), class "mybutton"] [text "Generate length"]
       ,button [onClick (GenerateLetterCode), class "mybutton"] [text "Append to string"]
+      ,button [onClick (GenerateName), class "mybutton"] [text "Name"]
       ,div [] [ text (String.fromInt model.length) ]
-      ,text (printName model.name)
-      ,randomString model
+      ,text model.name
+      ,text (charListToString model.randomPart)
     ]
       
-randomString model =
-  text (generateString model.length)
-
 -- HELPERS
-generateString : Int -> String
-generateString length =
-    if(length > 1) then
-        "a" ++ generateString (length-1)
-    else
-        "a"
-            
-printName : List Char -> String
-printName chars =
-  case chars of
-    [] -> ""
-    (head::tail) -> String.fromChar head ++ (printName tail)
+generateRandomPart: List Char
+generateRandomPart =
+    ['a']
+
+charListToString : List Char -> String
+charListToString charList =
+    case charList of
+        [] -> ""
+        (head::tail) -> fromChar(head) ++ charListToString(tail)
