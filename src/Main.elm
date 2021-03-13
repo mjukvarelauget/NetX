@@ -2,17 +2,22 @@ module Main exposing (..)
 
 import Browser
 
+import Char exposing (fromCode)
+
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Random
+
+letterRangeLow = 97
+letterRangeHigh = 122
 
 -- MAIN
 main =
   Browser.element { init = init, update = update, subscriptions = subscriptions, view = view}
 
 -- MODEL
-type alias Model = { length: Int , numbers : List Int}
+type alias Model = { length: Int , name: List Char}
 
 init : () -> (Model, Cmd Msg)
 init _ =
@@ -22,26 +27,33 @@ init _ =
 
 -- UPDATE
 type Msg
-  = GenerateLength
-  | UpdateLength Int
-  | PopulateList Int
+  = GenerateNameLength Int Int
+  | GenerateLetterCode
+  | AppendNewLetter Int
+  | UpdateNameLength Int
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-      GenerateLength ->
+      GenerateLetterCode ->
           ( model
-          , Random.generate UpdateLength (Random.int 1 10)
+          , Random.generate AppendNewLetter (Random.int letterRangeLow letterRangeHigh)
           )
 
-      UpdateLength newLength ->
-          {model | length = newLength }
-          |> update (PopulateList newLength)
+      AppendNewLetter letterCode ->
+          ({model | name = fromCode(letterCode)::model.name}
+          , Cmd.none)
+          
+      GenerateNameLength minLength maxLength ->
+          ( model
+          , Random.generate UpdateNameLength (Random.int minLength maxLength)
+          )
 
-      PopulateList number ->
-          ( {model | numbers = number::model.numbers}
+      UpdateNameLength newLength ->
+          ( {model | length = newLength }
           , Cmd.none
           )
+
 
 -- SUBSCRIPTIONS
 subscriptions : Model -> Sub Msg
@@ -53,12 +65,13 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
   div [] [
-       button [onClick GenerateLength, class "mybutton"] [text "Generate name"]
+       button [onClick (GenerateNameLength 1 10), class "mybutton"] [text "Generate name"]
+      ,button [onClick (GenerateLetterCode), class "mybutton"] [text "Append to string"]
       ,div [] [ text (String.fromInt model.length) ]
-      ,text (printList model.numbers)
+      ,text (printName model.name)
       ,randomString model
     ]
-
+      
 randomString model =
   text (generateString model.length)
 
@@ -69,9 +82,9 @@ generateString length =
         "a" ++ generateString (length-1)
     else
         "a"
-
-printList : List Int -> String
-printList list =
-  case list of
+            
+printName : List Char -> String
+printName chars =
+  case chars of
     [] -> ""
-    (head::tail) -> (String.fromInt head) ++ " " ++ (printList tail)
+    (head::tail) -> String.fromChar head ++ (printName tail)
