@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Browser
 
-import String exposing (fromChar)
+import String exposing (fromChar, fromList)
 import Char exposing (fromCode)
 
 import Html exposing (..)
@@ -81,16 +81,10 @@ view model =
       ,button [onClick (GenerateName), class "mybutton"] [text "Name"]
       ,div [] [ text (String.fromInt model.length) ]
       ,text model.name
-      ,text (charListToString model.randomPart)
+      ,text (String.fromList model.randomPart)
     ]
       
 -- HELPERS
 generateRandomPart: List Char
 generateRandomPart =
     ['a']
-
-charListToString : List Char -> String
-charListToString charList =
-    case charList of
-        [] -> ""
-        (head::tail) -> fromChar(head) ++ charListToString(tail)
